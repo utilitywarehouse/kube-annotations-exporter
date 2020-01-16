@@ -36,18 +36,10 @@ func (nw *namespaceWatcher) updateNamespaceMetrics() {
 	nw.Metrics.UpdateNamespaceAnnotations(nsList)
 }
 
-func (nw *namespaceWatcher) deleteNamespaceMetrics(ns *v1.Namespace) {
-	nw.Metrics.DeleteNamespace(ns)
-}
-
 func (nw *namespaceWatcher) eventHandler(eventType watch.EventType, old *v1.Namespace, new *v1.Namespace) {
 	switch eventType {
-	case watch.Added:
+	case watch.Added, watch.Modified, watch.Deleted:
 		nw.updateNamespaceMetrics()
-	case watch.Modified:
-		nw.updateNamespaceMetrics()
-	case watch.Deleted:
-		nw.deleteNamespaceMetrics(new)
 	default:
 		fmt.Printf("[Info] Unknown namespace event received: %v", eventType)
 	}

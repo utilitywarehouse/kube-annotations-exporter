@@ -8,7 +8,6 @@ import (
 // PrometheusInterface allows for mocking out the functionality of Prometheus when testing.
 type PrometheusInterface interface {
 	UpdateNamespaceAnnotations([]v1.Namespace)
-	DeleteNamespace(*v1.Namespace)
 }
 
 type Prometheus struct {
@@ -50,12 +49,4 @@ func (p *Prometheus) UpdateNamespaceAnnotations(nsList []v1.Namespace) {
 		}
 	}
 
-}
-
-func (p *Prometheus) DeleteNamespace(ns *v1.Namespace) {
-	// func (GaugeVec) Delete: returns true if a metric was deleted and
-	// and false otherwise. No panic caused if metric doesn't exist
-	p.namespaceAnnotations.Delete(prometheus.Labels{
-		"namespace": ns.Name,
-	})
 }
