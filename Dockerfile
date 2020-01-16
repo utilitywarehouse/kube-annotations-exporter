@@ -7,4 +7,7 @@ RUN apk --no-cache add git &&\
   go test ./... &&\
   go build -o /kube-namespace-annotations-exporter .
 
-ENTRYPOINT [ "/kube-namespace-annotations-exporter" ]
+FROM alpine:3.10
+COPY --from=build /kube-namespace-annotations-exporter /kube-namespace-annotations-exporter
+
+ENTRYPOINT [ "/kube-namespace-annotations-exporter"]
