@@ -29,7 +29,9 @@ func main() {
 
 	nsWatcher := kube.NewNamespaceWatcher(
 		kubeClient,
-		1*time.Minute, // Force resync every minute
+		// Resync will trigger an onUpdate event for everything that is
+		// stored in cache.
+		30*time.Minute,
 		metrics,
 	)
 	go nsWatcher.Start()
