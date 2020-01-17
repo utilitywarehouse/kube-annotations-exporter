@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"net/http"
 	"os"
+	"time"
 
 	"github.com/prometheus/client_golang/prometheus/promhttp"
 	"github.com/utilitywarehouse/kube-namespace-annotations-exporter/kube"
@@ -28,7 +29,7 @@ func main() {
 
 	nsWatcher := kube.NewNamespaceWatcher(
 		kubeClient,
-		0,
+		1*time.Minute, // Force resync every minute
 		metrics,
 	)
 	go nsWatcher.Start()
