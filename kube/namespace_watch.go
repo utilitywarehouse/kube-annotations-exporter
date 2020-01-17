@@ -41,7 +41,12 @@ func (nw *namespaceWatcher) eventHandler(eventType watch.EventType, old *v1.Name
 	case watch.Added, watch.Modified, watch.Deleted:
 		nw.updateNamespaceMetrics()
 	default:
-		fmt.Printf("[Info] Unknown namespace event received: %v", eventType)
+		fmt.Println(
+			fmt.Sprintf(
+				"[Info] Unknown namespace event received: %v",
+				eventType,
+			),
+		)
 	}
 }
 
@@ -67,14 +72,14 @@ func (nw *namespaceWatcher) Start() {
 	}
 	store, controller := cache.NewInformer(listWatch, &v1.Namespace{}, nw.resyncPeriod, eventHandler)
 	nw.store = store
-	fmt.Printf("[Info] Starting namespace watcher")
+	fmt.Println("[Info] Starting namespace watcher")
 	// Running controller will block until writing on the stop channel.
 	controller.Run(nw.stopChannel)
-	fmt.Printf("[Info] Stopped namespace watcher")
+	fmt.Println("[Info] Stopped namespace watcher")
 }
 
 func (nw *namespaceWatcher) Stop() {
-	fmt.Printf("[Info] Stopping namespace watcher")
+	fmt.Println("[Info] Stopping namespace watcher")
 	close(nw.stopChannel)
 }
 
@@ -83,7 +88,12 @@ func (nw *namespaceWatcher) List() []v1.Namespace {
 	for _, obj := range nw.store.List() {
 		ns, ok := obj.(*v1.Namespace)
 		if !ok {
-			fmt.Printf("[Error] Cannot read namespace object: %s", obj)
+			fmt.Println(
+				fmt.Sprintf(
+					"[Error] Cannot read namespace object: %s",
+					obj,
+				),
+			)
 			continue
 		}
 		nsList = append(nsList, *ns)
