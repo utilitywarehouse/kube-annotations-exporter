@@ -14,6 +14,7 @@ import (
 
 var (
 	flagKubeConfigPath = flag.String("config", "", "Path of a kube config file, if not provided the app will try to get in cluster config")
+	flagResyncPeriod   = flag.Int("resync-period", 60, "Namespace watcher cache resync period in minutes. Defaults to 60")
 )
 
 func main() {
@@ -27,11 +28,13 @@ func main() {
 		os.Exit(1)
 	}
 
+	resyncPeriod := time.Duration(*flagResyncPeriod) * time.Minute
+
 	nsWatcher := kube.NewNamespaceWatcher(
 		kubeClient,
 		// Resync will trigger an onUpdate event for everything that is
 		// stored in cache.
-		30*time.Minute,
+		resyncPeriod,
 		metrics,
 	)
 	go nsWatcher.Start()
