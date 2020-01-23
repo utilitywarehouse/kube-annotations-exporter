@@ -1,5 +1,7 @@
 # kube-namespace-annotations-exporter
 
+[![Docker Repository on Quay](https://quay.io/repository/utilitywarehouse/kube-namespace-annotations-exporter/status "Docker Repository on Quay")](https://quay.io/repository/utilitywarehouse/kube-namespace-annotations-exporter)
+
 Exports namespace metrics as annotations.
 
 Substitute for kube-state-metrics functionality before:
