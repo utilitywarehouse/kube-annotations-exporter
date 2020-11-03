@@ -15,7 +15,7 @@ import (
 var (
 	flagNamespaceAnnotations = &StringSliceFlag{}
 	flagPodAnnotations       = &StringSliceFlag{}
-	flagKubeConfigPath       = flag.String("config", "", "Path of a kube config file, if not provided the app will try to get in cluster config")
+	flagKubeConfigPath       = flag.String("config", "", "Path of a kube config file, if not provided the app will try $KUBECONFIG, $HOME/.kube/config or in cluster config")
 	flagResyncPeriod         = flag.Duration("resync-period", 60*time.Minute, "Namespace watcher cache resync period")
 )
 
