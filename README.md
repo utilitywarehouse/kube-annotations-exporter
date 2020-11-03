@@ -10,3 +10,5 @@ Substitute for kube-state-metrics functionality before:
 # Metrics
 
 - `kube_namespace_annotations`: includes labels for `namespace`, `key` and `value`
+- `kube_pod_annotations`: includes labels for `pod`, `namespace`, `key` and `value`
+

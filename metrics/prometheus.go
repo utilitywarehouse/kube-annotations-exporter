@@ -8,10 +8,12 @@ import (
 // PrometheusInterface allows for mocking out the functionality of Prometheus when testing.
 type PrometheusInterface interface {
 	UpdateNamespaceAnnotations([]v1.Namespace)
+	UpdatePodAnnotations([]v1.Pod, []string)
 }
 
 type Prometheus struct {
 	namespaceAnnotations *prometheus.GaugeVec
+	podAnnotations       *prometheus.GaugeVec
 }
 
 // Init creates and registers the metrics.
@@ -31,7 +33,24 @@ func (p *Prometheus) Init() {
 		},
 	)
 
+	p.podAnnotations = prometheus.NewGaugeVec(prometheus.GaugeOpts{
+		Name: "kube_pod_annotations",
+		Help: "Kubernetes pod annotations",
+	},
+		[]string{
+			// Pod in question
+			"pod",
+			// Pod namespace
+			"namespace",
+			// Annotation key
+			"key",
+			// Annotation value
+			"value",
+		},
+	)
+
 	prometheus.MustRegister(p.namespaceAnnotations)
+	prometheus.MustRegister(p.podAnnotations)
 }
 
 func (p *Prometheus) UpdateNamespaceAnnotations(nsList []v1.Namespace) {
@@ -49,4 +68,34 @@ func (p *Prometheus) UpdateNamespaceAnnotations(nsList []v1.Namespace) {
 		}
 	}
 
+}
+
+func (p *Prometheus) UpdatePodAnnotations(podList []v1.Pod, annotations []string) {
+	// Flush so annotations that no longer exist get deleted
+	p.podAnnotations.Reset()
+
+	// Then set a metric for each of the existing annotations to 1
+	for _, pod := range podList {
+		for key, value := range pod.Annotations {
+			if len(annotations) == 0 || contains(annotations, key) {
+				p.podAnnotations.With(prometheus.Labels{
+					"pod":       pod.Name,
+					"namespace": pod.Namespace,
+					"key":       key,
+					"value":     value,
+				}).Set(1)
+			}
+		}
+	}
+
+}
+
+func contains(values []string, value string) bool {
+	for _, v := range values {
+		if v == value {
+			return true
+		}
+	}
+
+	return false
 }
