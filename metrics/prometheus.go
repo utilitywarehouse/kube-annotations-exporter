@@ -7,7 +7,7 @@ import (
 
 // PrometheusInterface allows for mocking out the functionality of Prometheus when testing.
 type PrometheusInterface interface {
-	UpdateNamespaceAnnotations([]v1.Namespace)
+	UpdateNamespaceAnnotations([]v1.Namespace, []string)
 	UpdatePodAnnotations([]v1.Pod, []string)
 }
 
@@ -53,18 +53,20 @@ func (p *Prometheus) Init() {
 	prometheus.MustRegister(p.podAnnotations)
 }
 
-func (p *Prometheus) UpdateNamespaceAnnotations(nsList []v1.Namespace) {
+func (p *Prometheus) UpdateNamespaceAnnotations(nsList []v1.Namespace, annotations []string) {
 	// Flush so annotations that no longer exist get deleted
 	p.namespaceAnnotations.Reset()
 
 	// Then set a metric for each of the existing annotations to 1
 	for _, ns := range nsList {
 		for key, value := range ns.Annotations {
-			p.namespaceAnnotations.With(prometheus.Labels{
-				"namespace": ns.Name,
-				"key":       key,
-				"value":     value,
-			}).Set(1)
+			if len(annotations) == 0 || contains(annotations, key) {
+				p.namespaceAnnotations.With(prometheus.Labels{
+					"namespace": ns.Name,
+					"key":       key,
+					"value":     value,
+				}).Set(1)
+			}
 		}
 	}
 

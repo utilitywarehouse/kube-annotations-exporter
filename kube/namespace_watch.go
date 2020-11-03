@@ -15,6 +15,7 @@ import (
 )
 
 type namespaceWatcher struct {
+	annotations  []string
 	client       kubernetes.Interface
 	resyncPeriod time.Duration
 	stopChannel  chan struct{}
@@ -22,8 +23,9 @@ type namespaceWatcher struct {
 	Metrics      metrics.PrometheusInterface
 }
 
-func NewNamespaceWatcher(client kubernetes.Interface, resyncPeriod time.Duration, metrics metrics.PrometheusInterface) *namespaceWatcher {
+func NewNamespaceWatcher(client kubernetes.Interface, resyncPeriod time.Duration, metrics metrics.PrometheusInterface, annotations []string) *namespaceWatcher {
 	return &namespaceWatcher{
+		annotations:  annotations,
 		client:       client,
 		resyncPeriod: resyncPeriod,
 		stopChannel:  make(chan struct{}),
@@ -33,7 +35,7 @@ func NewNamespaceWatcher(client kubernetes.Interface, resyncPeriod time.Duration
 
 func (nw *namespaceWatcher) updateNamespaceMetrics() {
 	nsList := nw.List()
-	nw.Metrics.UpdateNamespaceAnnotations(nsList)
+	nw.Metrics.UpdateNamespaceAnnotations(nsList, nw.annotations)
 }
 
 func (nw *namespaceWatcher) eventHandler(eventType watch.EventType, old *v1.Namespace, new *v1.Namespace) {

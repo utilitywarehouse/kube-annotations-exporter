@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"net/http"
 	"os"
-	"strings"
 	"time"
 
 	"github.com/prometheus/client_golang/prometheus/promhttp"
@@ -14,12 +13,14 @@ import (
 )
 
 var (
-	flagPodAnnotations = &StringSliceFlag{}
-	flagKubeConfigPath = flag.String("config", "", "Path of a kube config file, if not provided the app will try to get in cluster config")
-	flagResyncPeriod   = flag.Duration("resync-period", 60*time.Minute, "Namespace watcher cache resync period")
+	flagNamespaceAnnotations = &StringSliceFlag{}
+	flagPodAnnotations       = &StringSliceFlag{}
+	flagKubeConfigPath       = flag.String("config", "", "Path of a kube config file, if not provided the app will try to get in cluster config")
+	flagResyncPeriod         = flag.Duration("resync-period", 60*time.Minute, "Namespace watcher cache resync period")
 )
 
 func main() {
+	flag.Var(flagNamespaceAnnotations, "namespace-annotations", "Annotations to export for namespaces. Can be set multiple times and/or in comma-delimited form. By default all annotations will be exported.")
 	flag.Var(flagPodAnnotations, "pod-annotations", "Annotations to export for pods. Can be set multiple times and/or in comma-delimited form. By default all annotations will be exported.")
 	flag.Parse()
 
@@ -38,6 +39,7 @@ func main() {
 		// stored in cache.
 		*flagResyncPeriod,
 		metrics,
+		flagNamespaceAnnotations.StringSlice(),
 	)
 	go nsWatcher.Start()
 
