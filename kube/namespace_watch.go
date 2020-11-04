@@ -1,6 +1,7 @@
 package kube
 
 import (
+	"context"
 	"fmt"
 	"time"
 
@@ -55,10 +56,10 @@ func (nw *namespaceWatcher) eventHandler(eventType watch.EventType, old *v1.Name
 func (nw *namespaceWatcher) Start() {
 	listWatch := &cache.ListWatch{
 		ListFunc: func(options metav1.ListOptions) (runtime.Object, error) {
-			return nw.client.CoreV1().Namespaces().List(options)
+			return nw.client.CoreV1().Namespaces().List(context.Background(), options)
 		},
 		WatchFunc: func(options metav1.ListOptions) (watch.Interface, error) {
-			return nw.client.CoreV1().Namespaces().Watch(options)
+			return nw.client.CoreV1().Namespaces().Watch(context.Background(), options)
 		},
 	}
 	eventHandler := cache.ResourceEventHandlerFuncs{

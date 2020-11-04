@@ -1,6 +1,7 @@
 package kube
 
 import (
+	"context"
 	"fmt"
 	"time"
 
@@ -55,10 +56,10 @@ func (pw *podWatcher) eventHandler(eventType watch.EventType, old *v1.Pod, new *
 func (pw *podWatcher) Start() {
 	listWatch := &cache.ListWatch{
 		ListFunc: func(options metav1.ListOptions) (runtime.Object, error) {
-			return pw.client.CoreV1().Pods("").List(options)
+			return pw.client.CoreV1().Pods("").List(context.Background(), options)
 		},
 		WatchFunc: func(options metav1.ListOptions) (watch.Interface, error) {
-			return pw.client.CoreV1().Pods("").Watch(options)
+			return pw.client.CoreV1().Pods("").Watch(context.Background(), options)
 		},
 	}
 	eventHandler := cache.ResourceEventHandlerFuncs{
