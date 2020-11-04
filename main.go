@@ -8,8 +8,8 @@ import (
 	"time"
 
 	"github.com/prometheus/client_golang/prometheus/promhttp"
-	"github.com/utilitywarehouse/kube-namespace-annotations-exporter/kube"
-	"github.com/utilitywarehouse/kube-namespace-annotations-exporter/metrics"
+	"github.com/utilitywarehouse/kube-annotations-exporter/kube"
+	"github.com/utilitywarehouse/kube-annotations-exporter/metrics"
 )
 
 var (

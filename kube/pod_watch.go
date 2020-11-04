@@ -11,7 +11,7 @@ import (
 	"k8s.io/client-go/kubernetes"
 	"k8s.io/client-go/tools/cache"
 
-	"github.com/utilitywarehouse/kube-namespace-annotations-exporter/metrics"
+	"github.com/utilitywarehouse/kube-annotations-exporter/metrics"
 )
 
 type podWatcher struct {
