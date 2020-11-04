@@ -1,31 +1,31 @@
 package kube
 
 import (
-	"fmt"
-
 	"k8s.io/client-go/kubernetes"
-	"k8s.io/client-go/rest"
 	"k8s.io/client-go/tools/clientcmd"
+
 	// in case of local kube config
 	_ "k8s.io/client-go/plugin/pkg/client/auth/oidc"
 )
 
-// GetClient returns a Kubernetes client (clientset) from the kubeconfig path
-// or from the in-cluster service account environment.
+// GetClient returns a Kubernetes client (clientset) from the supplied
+// kubeconfig path, the KUBECONFIG environment variable, the default config file
+// location ($HOME/.kube/config) or from the in-cluster service account environment.
 func GetClient(path string) (*kubernetes.Clientset, error) {
-	conf, err := getClientConfig(path)
-	if err != nil {
-		return nil, fmt.Errorf("failed to get Kubernetes client config: %v", err)
-	}
-	return kubernetes.NewForConfig(conf)
-}
-
-// getClientConfig returns a Kubernetes client Config.
-func getClientConfig(path string) (*rest.Config, error) {
+	loadingRules := clientcmd.NewDefaultClientConfigLoadingRules()
 	if path != "" {
-		// build Config from a kubeconfig filepath
-		return clientcmd.BuildConfigFromFlags("", path)
+		loadingRules.ExplicitPath = path
 	}
-	// uses pod's service account to get a Config
-	return rest.InClusterConfig()
+
+	kubeConfig := clientcmd.NewNonInteractiveDeferredLoadingClientConfig(
+		loadingRules,
+		&clientcmd.ConfigOverrides{},
+	)
+
+	config, err := kubeConfig.ClientConfig()
+	if err != nil {
+		return nil, err
+	}
+
+	return kubernetes.NewForConfig(config)
 }
