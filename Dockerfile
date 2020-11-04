@@ -7,7 +7,7 @@ RUN apk --no-cache add git &&\
   go test ./... &&\
   go build -o /kube-annotations-exporter .
 
-FROM alpine:3.10
+FROM alpine:3.12
 COPY --from=build /kube-annotations-exporter /kube-annotations-exporter
 
 ENTRYPOINT [ "/kube-annotations-exporter"]
