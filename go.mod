@@ -1,4 +1,4 @@
-module github.com/utilitywarehouse/kube-namespace-annotations-exporter
+module github.com/utilitywarehouse/kube-annotations-exporter
 
 go 1.13
 

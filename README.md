@@ -1,6 +1,6 @@
-# kube-namespace-annotations-exporter
+# kube-annotations-exporter
 
-[![Docker Repository on Quay](https://quay.io/repository/utilitywarehouse/kube-namespace-annotations-exporter/status "Docker Repository on Quay")](https://quay.io/repository/utilitywarehouse/kube-namespace-annotations-exporter)
+[![Docker Repository on Quay](https://quay.io/repository/utilitywarehouse/kube-annotations-exporter/status "Docker Repository on Quay")](https://quay.io/repository/utilitywarehouse/kube-annotations-exporter)
 
 Exports pod and namespace annotations as metrics.
 
@@ -21,7 +21,7 @@ and `-pod-annotations`.
 
 For example:
 ```
-./kube-namespace-annotations-exporter \
+./kube-annotations-exporter \
   -pod-annotations="prometheus.io/scrape" \
   -pod-annotations="prometheus.io/path" \
   -pod-annotations="kubernetes.io/psp"
@@ -29,7 +29,7 @@ For example:
 
 The flags can also be provided as a comma-delimited list:
 ```
-./kube-namespace-annotations-exporter \
+./kube-annotations-exporter \
   -pod-annotations="prometheus.io/scrape,prometheus.io/path,kubernetes.io/psp"
 ```
 
