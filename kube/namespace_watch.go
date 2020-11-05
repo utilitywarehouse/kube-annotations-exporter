@@ -3,7 +3,6 @@ package kube
 import (
 	"context"
 	"fmt"
-	"time"
 
 	v1 "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
@@ -16,21 +15,19 @@ import (
 )
 
 type namespaceWatcher struct {
-	annotations  []string
-	client       kubernetes.Interface
-	resyncPeriod time.Duration
-	stopChannel  chan struct{}
-	store        cache.Store
-	Metrics      metrics.PrometheusInterface
+	annotations []string
+	client      kubernetes.Interface
+	stopChannel chan struct{}
+	store       cache.Store
+	Metrics     metrics.PrometheusInterface
 }
 
-func NewNamespaceWatcher(client kubernetes.Interface, resyncPeriod time.Duration, metrics metrics.PrometheusInterface, annotations []string) *namespaceWatcher {
+func NewNamespaceWatcher(client kubernetes.Interface, metrics metrics.PrometheusInterface, annotations []string) *namespaceWatcher {
 	return &namespaceWatcher{
-		annotations:  annotations,
-		client:       client,
-		resyncPeriod: resyncPeriod,
-		stopChannel:  make(chan struct{}),
-		Metrics:      metrics,
+		annotations: annotations,
+		client:      client,
+		stopChannel: make(chan struct{}),
+		Metrics:     metrics,
 	}
 }
 
@@ -73,7 +70,7 @@ func (nw *namespaceWatcher) Start() {
 			nw.eventHandler(watch.Deleted, obj.(*v1.Namespace), nil)
 		},
 	}
-	store, controller := cache.NewInformer(listWatch, &v1.Namespace{}, nw.resyncPeriod, eventHandler)
+	store, controller := cache.NewInformer(listWatch, &v1.Namespace{}, 0, eventHandler)
 	nw.store = store
 	fmt.Println("[Info] Starting namespace watcher")
 	// Running controller will block until writing on the stop channel.

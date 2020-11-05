@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"net/http"
 	"os"
-	"time"
 
 	"github.com/prometheus/client_golang/prometheus/promhttp"
 	"github.com/utilitywarehouse/kube-annotations-exporter/kube"
@@ -16,7 +15,6 @@ var (
 	flagNamespaceAnnotations = &StringSliceFlag{}
 	flagPodAnnotations       = &StringSliceFlag{}
 	flagKubeConfigPath       = flag.String("config", "", "Path of a kube config file, if not provided the app will try $KUBECONFIG, $HOME/.kube/config or in cluster config")
-	flagResyncPeriod         = flag.Duration("resync-period", 60*time.Minute, "Namespace watcher cache resync period")
 )
 
 func main() {
@@ -35,9 +33,6 @@ func main() {
 
 	nsWatcher := kube.NewNamespaceWatcher(
 		kubeClient,
-		// Resync will trigger an onUpdate event for everything that is
-		// stored in cache.
-		*flagResyncPeriod,
 		metrics,
 		flagNamespaceAnnotations.StringSlice(),
 	)
@@ -45,9 +40,6 @@ func main() {
 
 	podWatcher := kube.NewPodWatcher(
 		kubeClient,
-		// Resync will trigger an onUpdate event for everything that is
-		// stored in cache.
-		*flagResyncPeriod,
 		metrics,
 		flagPodAnnotations.StringSlice(),
 	)
