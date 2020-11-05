@@ -3,7 +3,6 @@ package kube
 import (
 	"context"
 	"fmt"
-	"time"
 
 	v1 "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
@@ -16,21 +15,19 @@ import (
 )
 
 type podWatcher struct {
-	annotations  []string
-	client       kubernetes.Interface
-	resyncPeriod time.Duration
-	stopChannel  chan struct{}
-	store        cache.Store
-	Metrics      metrics.PrometheusInterface
+	annotations []string
+	client      kubernetes.Interface
+	stopChannel chan struct{}
+	store       cache.Store
+	Metrics     metrics.PrometheusInterface
 }
 
-func NewPodWatcher(client kubernetes.Interface, resyncPeriod time.Duration, metrics metrics.PrometheusInterface, annotations []string) *podWatcher {
+func NewPodWatcher(client kubernetes.Interface, metrics metrics.PrometheusInterface, annotations []string) *podWatcher {
 	return &podWatcher{
-		annotations:  annotations,
-		client:       client,
-		resyncPeriod: resyncPeriod,
-		stopChannel:  make(chan struct{}),
-		Metrics:      metrics,
+		annotations: annotations,
+		client:      client,
+		stopChannel: make(chan struct{}),
+		Metrics:     metrics,
 	}
 }
 
@@ -73,7 +70,7 @@ func (pw *podWatcher) Start() {
 			pw.eventHandler(watch.Deleted, obj.(*v1.Pod), nil)
 		},
 	}
-	store, controller := cache.NewInformer(listWatch, &v1.Pod{}, pw.resyncPeriod, eventHandler)
+	store, controller := cache.NewInformer(listWatch, &v1.Pod{}, 0, eventHandler)
 	pw.store = store
 	fmt.Println("[Info] Starting pod watcher")
 	// Running controller will block until writing on the stop channel.
