@@ -1,5 +1,9 @@
 # kube-annotations-exporter
 
+Archived in favour of kube-state-metrics. After
+https://github.com/kubernetes/kube-state-metrics/pull/1468 - its now able to
+export annotations as metrics again.
+
 [![Docker Repository on Quay](https://quay.io/repository/utilitywarehouse/kube-annotations-exporter/status "Docker Repository on Quay")](https://quay.io/repository/utilitywarehouse/kube-annotations-exporter)
 
 Exports pod and namespace annotations as metrics.
